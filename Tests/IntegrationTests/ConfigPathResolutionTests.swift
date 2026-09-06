@@ -32,7 +32,7 @@ struct ConfigPathResolutionTests {
 
     /// Returns the paths of the files that are actually linted when the given paths are passed as command line
     /// arguments, relative to the fixture directory.
-    private func visitedFilePaths(in scenario: String, paths: [String]) async throws -> [String] {
+    private func visitedLintableFilePaths(in scenario: String, paths: [String]) async throws -> [String] {
         let scenarioPath = fixturePath(scenario)
         return try await CurrentWorkingDirectory.$url.withValue(scenarioPath) {
             let config = Configuration(configurationFiles: [])
@@ -95,6 +95,14 @@ struct ConfigPathResolutionTests {
             lintableFilePaths(in: "_4_nested_basic", configFile: ".swiftlint.yml")
                 == ["ModuleA/File.swift", "ModuleA/Generated/File.swift", "ModuleB/File.swift"]
         )
+    }
+    
+    @Test
+    func nestedConfigurationBasicWithCommandLine() async throws {
+        #expect(try await visitedLintableFilePaths(
+            in: "_4_nested_basic",
+            paths: ["ModuleA/File.swift", "ModuleA/Generated/File.swift", "ModuleB/File.swift"]
+        ) == ["ModuleA/File.swift", "ModuleB/File.swift"])
     }
 
     @Test
@@ -179,18 +187,6 @@ struct ConfigPathResolutionTests {
                     .contains("explicit_type_interface")
             )
         }
-    }
-
-    @Test
-    func nestedConfigurationExclusionAppliesToFilePathArguments() async throws {
-        // Passing a file explicitly bypasses the exclusion filter while collecting the files to lint. The
-        // exclusions of the configuration applying to each file must still be honored when grouping them.
-        let visitedPaths = try await visitedFilePaths(
-            in: "_4_nested_basic",
-            paths: ["ModuleA/File.swift", "ModuleA/Generated/File.swift", "ModuleB/File.swift"]
-        )
-
-        #expect(visitedPaths == ["ModuleA/File.swift", "ModuleB/File.swift"])
     }
 
     @Test
