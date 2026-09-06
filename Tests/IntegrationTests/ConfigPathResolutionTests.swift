@@ -37,7 +37,7 @@ struct ConfigPathResolutionTests {
         return try await CurrentWorkingDirectory.$url.withValue(scenarioPath) {
             let config = Configuration(configurationFiles: [])
             let files = try await config.visitLintableFiles(
-                options: LintOrAnalyzeOptions(paths: paths.map { $0.url() }),
+                options: .lint(paths: paths.map { $0.url() }),
                 storage: RuleStorage(),
                 visitorBlock: { _ in
                     // Only the set of visited files matters, not the violations found in them.
@@ -265,34 +265,34 @@ private extension LintOrAnalyzeOptions {
     static func lint(paths: [URL]) -> Self {
         Self(mode: .lint,
              paths: paths,
-                  useSTDIN: false,
-                  configurationFiles: [],
-                  strict: false,
-                  lenient: false,
-                  forceExclude: false,
-                  useExcludingByPrefix: false,
-                  useScriptInputFiles: false,
-                  useScriptInputFileLists: false,
-                  benchmark: false,
-                  reporter: nil,
-                  baseline: nil,
-                  writeBaseline: nil,
-                  workingDirectory: nil,
-                  // Avoid verbose stderr.
-                  quiet: true,
-                  output: nil,
-                  progress: false,
-                  cachePath: nil,
-                  // The default of visitLintableFiles does not use caches.
-                  ignoreCache: true,
-                  enableAllRules: false,
-                  onlyRule: [],
-                  autocorrect: false,
-                  format: false,
-                  disableSourceKit: false,
-                  compilerLogPath: nil,
-                  compileCommands: nil,
-                  checkForUpdates: false
+             useSTDIN: false,
+             configurationFiles: [],
+             strict: false,
+             lenient: false,
+             forceExclude: false,
+             useExcludingByPrefix: false,
+             useScriptInputFiles: false,
+             useScriptInputFileLists: false,
+             benchmark: false,
+             reporter: nil,
+             baseline: nil,
+             writeBaseline: nil,
+             workingDirectory: nil,
+             // Avoid verbose stderr.
+             quiet: true,
+             output: nil,
+             progress: false,
+             cachePath: nil,
+             // The default of visitLintableFiles does not use caches.
+             ignoreCache: true,
+             enableAllRules: false,
+             onlyRule: [],
+             autocorrect: false,
+             format: false,
+             disableSourceKit: false,
+             compilerLogPath: nil,
+             compileCommands: nil,
+             checkForUpdates: false
         )
     }
 }
