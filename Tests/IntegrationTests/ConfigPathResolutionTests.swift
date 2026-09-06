@@ -96,7 +96,7 @@ struct ConfigPathResolutionTests {
                 == ["ModuleA/File.swift", "ModuleA/Generated/File.swift", "ModuleB/File.swift"]
         )
     }
-    
+
     @Test
     func nestedConfigurationBasicWithCommandLine() async throws {
         #expect(try await visitedLintableFilePaths(
