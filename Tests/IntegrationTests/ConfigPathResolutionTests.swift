@@ -261,7 +261,7 @@ struct ConfigPathResolutionTests {
 }
 
 private extension LintOrAnalyzeOptions {
-    /// Options equivalent to running `swiftlint lint <paths>` without any other arguments.
+    /// Options equivalent to running `swiftlint lint --quiet --no-cache <paths>`.
     init(paths: [URL]) {
         self.init(mode: .lint,
                   paths: paths,
@@ -278,10 +278,12 @@ private extension LintOrAnalyzeOptions {
                   baseline: nil,
                   writeBaseline: nil,
                   workingDirectory: nil,
+                  // Avoid verbose stderr.
                   quiet: true,
                   output: nil,
                   progress: false,
                   cachePath: nil,
+                  // The default of visitLintableFiles does not use caches.
                   ignoreCache: true,
                   enableAllRules: false,
                   onlyRule: [],
