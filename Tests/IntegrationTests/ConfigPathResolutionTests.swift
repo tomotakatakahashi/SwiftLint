@@ -263,36 +263,37 @@ struct ConfigPathResolutionTests {
 private extension LintOrAnalyzeOptions {
     /// Options equivalent to running `swiftlint lint --quiet --no-cache <paths>`.
     static func lint(paths: [URL]) -> Self {
-        Self(mode: .lint,
-             paths: paths,
-             useSTDIN: false,
-             configurationFiles: [],
-             strict: false,
-             lenient: false,
-             forceExclude: false,
-             useExcludingByPrefix: false,
-             useScriptInputFiles: false,
-             useScriptInputFileLists: false,
-             benchmark: false,
-             reporter: nil,
-             baseline: nil,
-             writeBaseline: nil,
-             workingDirectory: nil,
-             // Avoid verbose stderr.
-             quiet: true,
-             output: nil,
-             progress: false,
-             cachePath: nil,
-             // The default of visitLintableFiles does not use caches.
-             ignoreCache: true,
-             enableAllRules: false,
-             onlyRule: [],
-             autocorrect: false,
-             format: false,
-             disableSourceKit: false,
-             compilerLogPath: nil,
-             compileCommands: nil,
-             checkForUpdates: false
+        Self(
+            mode: .lint,
+            paths: paths,
+            useSTDIN: false,
+            configurationFiles: [],
+            strict: false,
+            lenient: false,
+            forceExclude: false,
+            useExcludingByPrefix: false,
+            useScriptInputFiles: false,
+            useScriptInputFileLists: false,
+            benchmark: false,
+            reporter: nil,
+            baseline: nil,
+            writeBaseline: nil,
+            workingDirectory: nil,
+            // Avoid verbose stderr.
+            quiet: true,
+            output: nil,
+            progress: false,
+            cachePath: nil,
+            // The default of visitLintableFiles does not use caches.
+            ignoreCache: true,
+            enableAllRules: false,
+            onlyRule: [],
+            autocorrect: false,
+            format: false,
+            disableSourceKit: false,
+            compilerLogPath: nil,
+            compileCommands: nil,
+            checkForUpdates: false
         )
     }
 }
