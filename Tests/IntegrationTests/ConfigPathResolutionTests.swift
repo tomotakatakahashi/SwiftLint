@@ -124,6 +124,23 @@ struct ConfigPathResolutionTests {
             ) == ["project/Sources/Models/User.swift"]
         )
     }
+    
+    @Test
+    func wildCardPatternCountWithCommandLine() async throws {
+        // `swiftlint --quiet --no-cache Sources/Models/User.swift Sources/Models/User.generated.swift`
+        #expect(
+            try await visitedLintableFilePaths(
+                in: "_5_wildcard_patterns",
+                paths: ["project/Sources/Models/User.swift", "project/Sources/Models/User.generated.swift"]
+            ) == ["project/Sources/Models/User.generated.swift", "project/Sources/Models/User.swift"]
+        )
+
+        // `swiftlint --quiet --no-cache`
+            #expect(
+                try await visitedLintableFilePaths(in: "_5_wildcard_patterns", paths: [])
+                    == ["project/Sources/Generated/API.generated.swift", "project/Sources/Models/User.generated.swift", "project/Sources/Models/User.swift"]
+            )
+    }
 
     @Test
     func lintChildFolder() {
