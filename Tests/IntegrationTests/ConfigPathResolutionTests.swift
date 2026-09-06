@@ -99,10 +99,19 @@ struct ConfigPathResolutionTests {
 
     @Test
     func nestedConfigurationBasicWithCommandLine() async throws {
-        #expect(try await visitedLintableFilePaths(
-            in: "_4_nested_basic",
-            paths: ["ModuleA/File.swift", "ModuleA/Generated/File.swift", "ModuleB/File.swift"]
-        ) == ["ModuleA/File.swift", "ModuleB/File.swift"])
+        // `swiftlint --quiet --no-cache ModuleA/File.swift ModuleA/Generated/File.swift ModuleB/File.swift`
+        #expect(
+            try await visitedLintableFilePaths(
+                in: "_4_nested_basic",
+                paths: ["ModuleA/File.swift", "ModuleA/Generated/File.swift", "ModuleB/File.swift"]
+            ) == ["ModuleA/File.swift", "ModuleB/File.swift"]
+        )
+
+        // `swiftlint --quiet --no-cache`
+        #expect(
+            try await visitedLintableFilePaths(in: "_4_nested_basic", paths: [])
+                == ["ModuleA/File.swift", "ModuleB/File.swift"]
+        )
     }
 
     @Test
@@ -265,7 +274,8 @@ private extension LintOrAnalyzeOptions {
     static func lint(paths: [URL]) -> Self {
         Self(
             mode: .lint,
-            paths: paths,
+            // Lint files in the current working directory if no paths were specified, just like the command does.
+            paths: paths.isNotEmpty ? paths : [URL.cwd],
             useSTDIN: false,
             configurationFiles: [],
             strict: false,
