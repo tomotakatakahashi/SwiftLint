@@ -32,12 +32,21 @@ struct ConfigPathResolutionTests {
 
     /// Returns the paths of the files that are actually linted when the given paths are passed as command line
     /// arguments, relative to the fixture directory.
-    private func visitedLintableFilePaths(in scenario: String, paths: [String]) async throws -> [String] {
+    ///
+    /// Set `asRelativeArguments` to keep the paths relative to the working directory instead of standardizing
+    /// them, which is the shape `URL(filePath:)` produces for a relative command line argument.
+    private func visitedLintableFilePaths(
+        in scenario: String,
+        paths: [String],
+        asRelativeArguments: Bool = false
+    ) async throws -> [String] {
         let scenarioPath = fixturePath(scenario)
         return try await CurrentWorkingDirectory.$url.withValue(scenarioPath) {
             let config = Configuration(configurationFiles: [])
             let files = try await config.visitLintableFiles(
-                options: .lint(paths: paths.map { $0.url() }),
+                options: .lint(paths: paths.map {
+                    asRelativeArguments ? URL(filePath: $0, relativeTo: URL.cwd) : $0.url()
+                }),
                 storage: RuleStorage(),
                 visitorBlock: { _ in
                     // Only the set of visited files matters, not the violations found in them.
@@ -115,6 +124,23 @@ struct ConfigPathResolutionTests {
     }
 
     @Test
+    func relativePathArgumentDoesNotEscapeRootDirectory() async throws {
+        // `swiftlint --quiet --no-cache Sources/File.swift` in the `project` directory.
+        //
+        // A relative argument yields a URL that keeps the working directory as its base. Walking up such a URL
+        // never compares equal to the absolute `rootDirectory`, so the search for nested configurations climbs
+        // out of the working directory and picks up the configuration above it, whose `excluded: project` then
+        // swallows the file that was explicitly passed.
+        let visitedPaths = try await visitedLintableFilePaths(
+            in: "_10_relative_path_arguments/project",
+            paths: ["Sources/File.swift"],
+            asRelativeArguments: true
+        )
+
+        #expect(visitedPaths == ["Sources/File.swift"])
+    }
+
+    @Test
     func wildcardPatternCount() {
         #expect(
             lintableFilePaths(
@@ -124,7 +150,7 @@ struct ConfigPathResolutionTests {
             ) == ["project/Sources/Models/User.swift"]
         )
     }
-    
+
     @Test
     func wildCardPatternCountWithCommandLine() async throws {
         // `swiftlint --quiet --no-cache Sources/Models/User.swift Sources/Models/User.generated.swift`

@@ -1,0 +1,3 @@
+# This configuration lives above the working directory and must never be picked up when linting in `project`.
+excluded:
+  - project
