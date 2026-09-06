@@ -262,9 +262,9 @@ struct ConfigPathResolutionTests {
 
 private extension LintOrAnalyzeOptions {
     /// Options equivalent to running `swiftlint lint --quiet --no-cache <paths>`.
-    init(paths: [URL]) {
-        self.init(mode: .lint,
-                  paths: paths,
+    static func lint(paths: [URL]) -> Self {
+        Self(mode: .lint,
+             paths: paths,
                   useSTDIN: false,
                   configurationFiles: [],
                   strict: false,
